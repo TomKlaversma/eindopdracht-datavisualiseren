@@ -1,9 +1,13 @@
+import processing.pdf.*;
+
 Table table;                                               
-String[] land = new String[0];
-int[] financieelVermogen = new int[0];              // hoger = beter
-float[] langetermijnWerkeloosheid = new float[0];   // hoger = slechter
-int[] persoonlijkeBezittingen = new int[0];         // hoger = beter
-float[] langeUren = new float[0];                   // hoger = slechter
+
+float[] financieelVermogen = new float[0];              // hoger = beter
+float[] langetermijnWerkeloosheid = new float[0];       // hoger = slechter
+float[] persoonlijkeBezittingen = new float[0];         // hoger = beter
+float[] langeUren = new float[0];                       // hoger = slechter
+float[] gem = {4.8 , 4.7, 4.8, 4.8};
+
 int stroke_point = 2;
 int colour = 0;
 
@@ -25,6 +29,7 @@ float[][][] allPoints = new float[circles.length][partities][2];
 void setup() {
   smooth();
   size(700, 700);
+  beginRecord(PDF, "exported_logo4.pdf"); 
   background(255); 
   colorMode(HSB, 360, 100, 100);
   angle = TWO_PI/(float)partities;
@@ -38,10 +43,11 @@ void setup() {
       circles[i] = new Circle(radius, width/2, height/2, i);
       circles[i].build();
     }
-    
-    //for(int i = inner_space; i < land.length; i++){
-       makeLines(); 
-    //}
+    // maak per land een lijn aan met 4 punten: 
+    for(int i = inner_space; i < financieelVermogen.length; i++){
+       float[] data = {financieelVermogen[i], langetermijnWerkeloosheid[i], persoonlijkeBezittingen[i], langeUren[i]};
+       makeLines(data, gem); 
+    }
   }
   
   // maak titel
@@ -54,14 +60,18 @@ void setup() {
   
 }
 
+// lees de data uit:
 boolean loadData() {    
   for (TableRow row : table.rows ()) {
-    land = append(land, row.getString("land"));
-    financieelVermogen = append(financieelVermogen, row.getInt("financieelVermogen"));
+    financieelVermogen = append(financieelVermogen, row.getFloat("financieelVermogen"));
     langetermijnWerkeloosheid = append(langetermijnWerkeloosheid, row.getFloat("langetermijnWerkeloosheid"));
-    persoonlijkeBezittingen = append(persoonlijkeBezittingen, row.getInt("persoonlijkeBezittingen"));
-    langeUren = append(langeUren, row.getFloat("langeUren"));
+    persoonlijkeBezittingen = append(persoonlijkeBezittingen, row.getFloat("persoonlijkeBezittingen"));
+    langeUren = append(langeUren, row.getFloat("langeUren"));    
   }
   return true;
+}
+
+void draw(){
+   endRecord(); 
 }
 
